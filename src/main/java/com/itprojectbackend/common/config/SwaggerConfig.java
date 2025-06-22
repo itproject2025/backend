@@ -25,7 +25,7 @@ public class SwaggerConfig {
 
         return new OpenAPI()
                 .info(new Info()
-                        .title("Trip Log API")
+                        .title("ITProject API")
                         .description("ItProject API입니다.")
                         .version("1.0.0"))
                 .components(new Components().addSecuritySchemes("bearerAuth", securityScheme))
