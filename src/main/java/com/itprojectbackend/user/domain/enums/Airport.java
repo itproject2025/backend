@@ -1,15 +1,15 @@
 package com.itprojectbackend.user.domain.enums;
 
 public enum Airport {
-    ICN("인천국제공항"),
-    GMP("김포공항"),
-    PUS("김해공항"),
-    CJU("제주국제공항"),
-    YNY("양양국제공항"),
-    KUV("군산공항"),
-    KWJ("광주공항"),
-    USN("울산공항"),
-    CJJ("청주공항");
+    ICN("Incheon International Airport"),
+    GMP("Gimpo Airport"),
+    PUS("Gimhae Airport"),
+    CJU("Jeju International Airport"),
+    YNY("Yangyang International Airport"),
+    KUV("Gunsan Airport"),
+    KWJ("Gwangju Airport"),
+    USN("Ulsan Airport"),
+    CJJ("Cheongju Airport");
 
     private final String displayName;
 

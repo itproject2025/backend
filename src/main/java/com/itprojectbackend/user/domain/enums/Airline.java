@@ -1,13 +1,13 @@
 package com.itprojectbackend.user.domain.enums;
 
 public enum Airline {
-    KOREAN_AIR("대한항공"),
-    ASIANA_AIRLINES("아시아나항공"),
-    JEJU_AIR("제주항공"),
-    TWAY_AIR("티웨이항공"),
-    AIR_BUSAN("에어부산"),
-    AIR_SEOUL("에어서울"),
-    JINAIR("진에어");
+    KOREAN_AIR("Korean Air"),
+    ASIANA_AIRLINES("Asiana Airlines"),
+    JEJU_AIR("Jeju Air"),
+    TWAY_AIR("T'way Air"),
+    AIR_BUSAN("Air Busan"),
+    AIR_SEOUL("Air Seoul"),
+    JINAIR("Jin Air");
 
 
     private final String displayName;
