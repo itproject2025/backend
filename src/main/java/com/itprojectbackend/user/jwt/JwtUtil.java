@@ -30,12 +30,12 @@ public class JwtUtil {
         this.accessTokenExpTime= accessTokenExpTime;
     }
 
-    public String createAccessToken(String nickname) {
-        return createToken(nickname,accessTokenExpTime);
+    public String createAccessToken(String email) {
+        return createToken(email,accessTokenExpTime);
     }
 
     // JWT 토큰 생성
-    public String createToken(String nickname, long expireTime) {
+    public String createToken(String email, long expireTime) {
 
         Map<String, Object> header=new HashMap<>();
         header.put("typ","JWT");
@@ -45,7 +45,7 @@ public class JwtUtil {
         ZonedDateTime tokenValidity=now.plusSeconds(expireTime);
 
         return Jwts.builder()
-                .setSubject(nickname)
+                .setSubject(email)
                 .setHeader(header)
                 .setIssuedAt(Date.from(now.toInstant()))
                 .setExpiration(Date.from(tokenValidity.toInstant()))
