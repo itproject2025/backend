@@ -1,8 +1,8 @@
 package com.itprojectbackend.flight.domain;
 
+import com.itprojectbackend.airport.domain.Airport;
 import com.itprojectbackend.common.domain.BaseEntity;
 import com.itprojectbackend.crew.domain.CrewSchedule;
-import com.itprojectbackend.user.domain.enums.Airport;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,9 +23,15 @@ public class FlightSchedule extends BaseEntity {
 
     private String flightNumber;
 
+
+    @ManyToOne
+    @JoinColumn(name = "departure_code")
     private Airport departureCode;
 
+    @ManyToOne
+    @JoinColumn(name = "arrival_code")
     private Airport arrivalCode;
+
 
     private LocalDateTime departureDate;
 
