@@ -1,20 +1,19 @@
 package com.itprojectbackend.user.domain;
 
+import com.itprojectbackend.airport.domain.Airport;
 import com.itprojectbackend.common.domain.BaseEntity;
 import com.itprojectbackend.crew.domain.CrewSchedule;
 import com.itprojectbackend.user.domain.enums.Airline;
-import com.itprojectbackend.user.domain.enums.Airport;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
 @Entity
+@Getter
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,7 +30,8 @@ public class User extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Airline airline;
 
-    @Enumerated(EnumType.STRING)
+    @ManyToOne
+    @JoinColumn(name = "base_airport_code")
     private Airport baseAirport;
 
     @OneToMany(mappedBy = "user")
