@@ -6,6 +6,7 @@ import com.itprojectbackend.crew.domain.CrewSchedule;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
@@ -15,6 +16,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
 public class FlightSchedule extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,7 +24,6 @@ public class FlightSchedule extends BaseEntity {
     private Long id;;
 
     private String flightNumber;
-
 
     @ManyToOne
     @JoinColumn(name = "departure_code")
@@ -39,7 +40,7 @@ public class FlightSchedule extends BaseEntity {
 
     private int duration;
 
-    private boolean isChecked;
+    private boolean isChecked; //비행 여부
 
     @OneToMany(mappedBy = "flightSchedule")
     private List<CrewSchedule> crewSchedules;
