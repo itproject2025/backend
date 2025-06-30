@@ -40,4 +40,27 @@ public class CrewScheduleService {
                 .toList();
 
     }
+
+    public List<CrewScheduleResponse> getScheduleByUserAndMonth(Long userId, int year, int month) {
+        LocalDateTime start=LocalDate.of(year, month, 1).atStartOfDay();
+        LocalDateTime end=start.plusMonths(1).minusNanos(1);
+
+        List<CrewSchedule> schedules=crewScheduleRepository.findByUserIdAndFlightSchedule_DepartureDateBetween(userId, start, end);
+
+        return schedules.stream()
+                .map(cs->{
+                    FlightSchedule fs=cs.getFlightSchedule();
+                    return new CrewScheduleResponse(
+                            fs.getFlightNumber(),
+                            fs.getDepartureCode().getCode(),
+                            fs.getArrivalCode().getCode(),
+                            fs.getDuration()/60,
+                            fs.getDuration()%60,
+                            fs.getDepartureDate(),
+                            fs.getArrivalDate(),
+                            cs.getFlightType()
+                    );
+                })
+                .toList();
+    }
 }

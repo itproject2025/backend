@@ -23,4 +23,6 @@ public interface CrewScheduleRepository extends JpaRepository<CrewSchedule, Long
             @Param("start") LocalDateTime start,
             @Param("end") LocalDateTime end
     );
+
+    List<CrewSchedule> findByUserIdAndFlightSchedule_DepartureDateBetween(Long userId, LocalDateTime start, LocalDateTime end);
 }

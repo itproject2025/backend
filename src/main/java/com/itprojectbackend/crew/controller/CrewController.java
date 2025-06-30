@@ -21,7 +21,7 @@ public class CrewController {
 
     private final CrewScheduleService crewScheduleService;
 
-    @GetMapping("/calendar")
+    @GetMapping("/calendar/day")
     @Operation(summary = "일별 비행 스케줄 목록 조회", description = "해당 유저의 일별 비행 스케줄 목록를 조회합니다.")
     public ResponseEntity<List<CrewScheduleResponse>> getCrewSchedule(@AuthenticationPrincipal CustomUserDetails customUserDetails,
                                                                       @RequestParam(required = false) int year,
@@ -29,6 +29,17 @@ public class CrewController {
                                                                       @RequestParam(required = false) int day) {
         Long userId=customUserDetails.getUser().getId();
         List<CrewScheduleResponse> result=crewScheduleService.getScheduleByUserAndDay(userId, year, month, day);
+        return ResponseEntity.ok(result);
+
+    }
+
+    @GetMapping("/calendar/month")
+    @Operation(summary = "월별 비행 스케줄 목록 조회", description = "해당 유저의 월별 비행 스케줄 목록을 조회합니다.")
+    public ResponseEntity<List<CrewScheduleResponse>> getMonthCrewSchedule(@AuthenticationPrincipal CustomUserDetails customUserDetail,
+                                                                           @RequestParam(required = false) int year,
+                                                                           @RequestParam(required = false) int month){
+        Long userId=customUserDetail.getUser().getId();
+        List<CrewScheduleResponse> result=crewScheduleService.getScheduleByUserAndMonth(userId,year,month);
         return ResponseEntity.ok(result);
 
     }
