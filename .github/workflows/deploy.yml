@@ -43,7 +43,7 @@ jobs:
         run: |
           echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
           docker build -t crewing-spring .
-          docker tag triplog_spring ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:${GITHUB_SHA::7}
+          docker tag crewing-spring ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:${GITHUB_SHA::7}
           docker push ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:${GITHUB_SHA::7}
 
       # EC2에서 컨테이너 실행
