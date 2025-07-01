@@ -27,6 +27,8 @@ public class User extends BaseEntity {
 
     private String nickname;
 
+    private int ShowupOffsetMinutes;
+
     @Enumerated(EnumType.STRING)
     private Airline airline;
 

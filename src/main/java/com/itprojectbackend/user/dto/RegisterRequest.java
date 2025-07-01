@@ -5,5 +5,7 @@ public record RegisterRequest(
         String password,
         String nickname,
         String airline,
-        String baseAirport
+        String baseAirport,
+        int ShowupHour,
+        int ShowupMinute
 ) {}

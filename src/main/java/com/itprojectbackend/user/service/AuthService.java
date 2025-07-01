@@ -47,6 +47,7 @@ public class AuthService {
                 .nickname(registerRequest.nickname())
                 .airline(airline)
                 .baseAirport(airport)
+                .ShowupOffsetMinutes(registerRequest.ShowupHour()*60+ registerRequest.ShowupMinute())
                 .build();
         userRepository.save(newUser);
     }
