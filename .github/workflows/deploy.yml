@@ -38,27 +38,40 @@ jobs:
         with:
           arguments: clean build -x test
 
-      # EC2로 JAR 파일 복사
-      - name: Copy JAR to EC2
-        uses: appleboy/scp-action@v0.1.4
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USERNAME }}
-          key: ${{ secrets.EC2_PRIVATE_KEY }}
-          source: "build/libs/*.jar"
-          target: "/home/${{ secrets.EC2_USERNAME }}/app"
-          strip_components: 2
+      # Docker 이미지 빌드 및 푸시
+      - name: Docker build and push
+        run: |
+          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+          docker build -t triplog_spring .
+          docker tag triplog_spring ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:${GITHUB_SHA::7}
+          docker push ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:${GITHUB_SHA::7}
 
-      # EC2에서 JAR 실행
-      - name: Run Spring Boot App on EC2
+      # EC2에서 컨테이너 실행
+      - name: Deploy to EC2 with Docker
         uses: appleboy/ssh-action@v0.1.10
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_PRIVATE_KEY }}
+          envs: GITHUB_SHA
           script: |
-            # 기존 앱 종료
-            pkill -f 'java -jar' || true
+            sudo docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
 
-            # 새 JAR 실행
-            nohup java -jar /home/${{ secrets.EC2_USERNAME }}/app/*.jar > ~/app/app.log 2>&1 &
+            # 최신 이미지 pull 및 태깅
+            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:${GITHUB_SHA::7}
+            sudo docker tag ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:${GITHUB_SHA::7} triplog_spring
+
+            # 기존 컨테이너 종료 및 삭제
+            sudo docker stop triplog_spring || true
+            sudo docker rm triplog_spring || true
+
+            # 새 컨테이너 실행
+            sudo docker run -d --name triplog_spring -p 8080:8080 triplog_spring
+
+            # 이전 이미지 정리
+            CURRENT_IMAGE_ID=$(sudo docker images --format "{{.Repository}} {{.Tag}} {{.ID}}" | grep "${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }} ${GITHUB_SHA::7}" | awk '{print $3}')
+            for IMAGE_ID in $(sudo docker images ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }} --format "{{.ID}}" | sort -u | grep -v "$CURRENT_IMAGE_ID"); do
+              sudo docker rmi "$IMAGE_ID" || true
+            done
+            sudo docker image prune -f
+
