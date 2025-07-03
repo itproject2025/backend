@@ -23,7 +23,10 @@ public enum ErrorCode {
 	PASSWORD_NOT_MATCH(HttpStatus.BAD_REQUEST,"비밀번호가 일치하지 않습니다"),
 
 	//Airport Error
-	INVALID_AIRPORT(HttpStatus.BAD_REQUEST,"해당 공항은 존재하지 않습니다.");
+	INVALID_AIRPORT(HttpStatus.BAD_REQUEST,"해당 공항은 존재하지 않습니다."),
+
+	//Crew Error
+	FLIGHT_SCHEDULE_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 등록된 비행 스케줄입니다.");
 
 	private final HttpStatus status;
 	private final String message;

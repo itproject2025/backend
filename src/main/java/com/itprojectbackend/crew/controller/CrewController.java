@@ -1,5 +1,6 @@
 package com.itprojectbackend.crew.controller;
 
+import com.itprojectbackend.crew.dto.CrewScheduleRequest;
 import com.itprojectbackend.crew.dto.CrewScheduleResponse;
 import com.itprojectbackend.crew.service.CrewScheduleService;
 import com.itprojectbackend.user.jwt.CustomUserDetails;
@@ -8,10 +9,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -44,6 +42,15 @@ public class CrewController {
         List<CrewScheduleResponse> result=crewScheduleService.getScheduleByUserAndMonth(userId,year,month);
         return ResponseEntity.ok(result);
 
+    }
+
+    @PostMapping("/add/flight")
+    @Operation(summary = "비행 스케줄 추가", description = "해당 유저의 비행 스케줄을 추가합니다.")
+    public ResponseEntity<String> addCrewSchedule(@AuthenticationPrincipal CustomUserDetails customUserDetails,
+                                                  @RequestBody CrewScheduleRequest crewScheduleRequest) {
+        Long userId=customUserDetails.getUser().getId();
+        crewScheduleService.addCrewSchedule(userId, crewScheduleRequest);
+        return ResponseEntity.ok("비행 스케줄이 성공적으로 추가되었습니다.");
     }
 
 }
