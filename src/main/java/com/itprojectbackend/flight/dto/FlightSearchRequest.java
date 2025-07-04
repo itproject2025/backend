@@ -12,6 +12,9 @@ public record FlightSearchRequest (
         String arrival,
 
         @Schema(description = "출발날짜", example = "2025-07-03")
-        String date
+        String date,
+
+        @Schema(description = "항공사 코드", example = "KE")
+        String iata
 ){
 }

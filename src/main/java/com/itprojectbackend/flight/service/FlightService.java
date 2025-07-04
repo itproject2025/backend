@@ -36,7 +36,8 @@ public class FlightService {
                 .queryParam("destinationLocationCode", request.arrival())
                 .queryParam("departureDate", request.date())
                 .queryParam("adults", "1")
-                .queryParam("nonStop", "true");
+                .queryParam("nonStop", "true")
+                .queryParam("includedAirlineCodes", request.iata());
 
         HttpEntity<Void> requestEntity = new HttpEntity<>(headers);
         ResponseEntity<String> response = restTemplate.exchange(

@@ -48,9 +48,8 @@ public class CrewController {
     @Operation(summary = "비행 스케줄 추가", description = "해당 유저의 비행 스케줄을 추가합니다.")
     public ResponseEntity<String> addCrewSchedule(@AuthenticationPrincipal CustomUserDetails customUserDetails,
                                                   @RequestBody CrewScheduleRequest crewScheduleRequest) {
-        Long userId=customUserDetails.getUser().getId();
+        Long userId = customUserDetails.getUser().getId();
         crewScheduleService.addCrewSchedule(userId, crewScheduleRequest);
         return ResponseEntity.ok("비행 스케줄이 성공적으로 추가되었습니다.");
     }
-
 }
