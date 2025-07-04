@@ -39,6 +39,7 @@ public class CrewScheduleService {
                 .map(cs-> {
                     FlightSchedule fs=cs.getFlightSchedule();
                     return new CrewScheduleResponse(
+                            cs.getId(),
                             fs.getFlightNumber(),
                             fs.getDepartureCode().getCode(),
                             fs.getArrivalCode().getCode(),
@@ -63,6 +64,7 @@ public class CrewScheduleService {
                 .map(cs->{
                     FlightSchedule fs=cs.getFlightSchedule();
                     return new CrewScheduleResponse(
+                            cs.getId(),
                             fs.getFlightNumber(),
                             fs.getDepartureCode().getCode(),
                             fs.getArrivalCode().getCode(),
@@ -143,6 +145,7 @@ public class CrewScheduleService {
                     int durationMinute = (int) (totalMinute%60);
 
                     return new CrewScheduleResponse(
+                            schedule.getId(),
                             flight.getFlightNumber(),
                             flight.getDepartureCode().getCode(),
                             flight.getArrivalCode().getCode(),
@@ -154,5 +157,17 @@ public class CrewScheduleService {
                     );
                 })
                 .toList();
+    }
+
+    public void deleteCrewSchedule(Long userId, Long id) {
+        User user=userFinder.findByUserId(userId);
+        CrewSchedule crewSchedule=crewScheduleRepository.findById(id)
+                .orElseThrow(()-> new CustomException(ErrorCode.CREW_SCHEDULE_NOT_FOUND));
+
+        if(!crewSchedule.getUser().getId().equals(user.getId())) {
+            throw new CustomException(ErrorCode.UNAUTHORIZED_CREW_SCHEDULE_ACCESS);
+        }
+
+        crewScheduleRepository.delete(crewSchedule);
     }
 }
