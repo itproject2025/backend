@@ -127,4 +127,32 @@ public class CrewScheduleService {
 
         crewScheduleRepository.save(crewSchedule);
     }
+
+    public List<CrewScheduleResponse> getScheduleList(Long userId) {
+        User user = userFinder.findByUserId(userId);
+        List<CrewSchedule> crewSchedules=crewScheduleRepository.findByUser(user);
+        return crewSchedules.stream()
+                .map(schedule -> {
+                    FlightSchedule flight=schedule.getFlightSchedule();
+
+                    LocalDateTime departureTime = flight.getDepartureDate();
+                    LocalDateTime arrivalTime = flight.getArrivalDate();
+
+                    long totalMinute= Duration.between(departureTime, arrivalTime).toMinutes();
+                    int durationHour = (int) (totalMinute/60);
+                    int durationMinute = (int) (totalMinute%60);
+
+                    return new CrewScheduleResponse(
+                            flight.getFlightNumber(),
+                            flight.getDepartureCode().getCode(),
+                            flight.getArrivalCode().getCode(),
+                            durationHour,
+                            durationMinute,
+                            departureTime,
+                            arrivalTime,
+                            schedule.getFlightType()
+                    );
+                })
+                .toList();
+    }
 }
