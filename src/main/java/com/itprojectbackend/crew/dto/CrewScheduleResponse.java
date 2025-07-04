@@ -6,6 +6,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 
 public record CrewScheduleResponse(
+        @Schema(description = "스케줄 아이디", example = "1")
+        Long scheduleId,
+
         @Schema(description = "비행 편명", example = "KE2025")
         String flightNumber,
 

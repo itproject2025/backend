@@ -60,4 +60,12 @@ public class CrewController {
         return ResponseEntity.ok(crewScheduleService.getScheduleList(userId));
     }
 
+    @DeleteMapping("{scheduleId}")
+    @Operation(summary = "비행 스케줄 삭제", description = "해당 유저의 비행 스케줄을 삭제합니다.")
+    public ResponseEntity<String> deleteCrewSchedule(@AuthenticationPrincipal CustomUserDetails customUserDetails,
+                                                     @PathVariable("scheduleId") Long scheduleId){
+        Long userId=customUserDetails.getUser().getId();
+        crewScheduleService.deleteCrewSchedule(userId, scheduleId);
+        return ResponseEntity.ok("비행 스케줄이 삭제되었습니다.");
+    }
 }
