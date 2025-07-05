@@ -1,6 +1,7 @@
 package com.itprojectbackend.crew.repository;
 
 import com.itprojectbackend.crew.domain.CrewSchedule;
+import com.itprojectbackend.flight.domain.FlightSchedule;
 import com.itprojectbackend.user.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -28,4 +29,6 @@ public interface CrewScheduleRepository extends JpaRepository<CrewSchedule, Long
     List<CrewSchedule> findByUserIdAndFlightSchedule_DepartureDateBetween(Long userId, LocalDateTime start, LocalDateTime end);
 
     List<CrewSchedule> findByUser(User user);
+
+    boolean existsByUserAndFlightSchedule(User user, FlightSchedule flightSchedule);
 }
