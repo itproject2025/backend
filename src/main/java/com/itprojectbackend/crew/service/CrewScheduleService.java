@@ -178,6 +178,10 @@ public class CrewScheduleService {
             throw new CustomException(ErrorCode.UNAUTHORIZED_CREW_SCHEDULE_ACCESS);
         }
 
+        FlightSchedule flightSchedule=crewSchedule.getFlightSchedule();
+        FlightDiary flightDiary=flightDiaryRepository.findByFlightSchedule(flightSchedule);
+
+        flightDiaryRepository.delete(flightDiary);
         crewScheduleRepository.delete(crewSchedule);
     }
 }

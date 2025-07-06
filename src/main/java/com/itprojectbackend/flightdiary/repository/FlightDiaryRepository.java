@@ -1,5 +1,6 @@
 package com.itprojectbackend.flightdiary.repository;
 
+import com.itprojectbackend.flight.domain.FlightSchedule;
 import com.itprojectbackend.flightdiary.domain.FlightDiary;
 import com.itprojectbackend.user.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,4 +11,6 @@ import java.util.List;
 @Repository
 public interface FlightDiaryRepository extends JpaRepository<FlightDiary, Long> {
     List<FlightDiary> findByWriter(User writer);
+
+    FlightDiary findByFlightSchedule(FlightSchedule flightSchedule);
 }
