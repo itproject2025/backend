@@ -5,13 +5,18 @@ import com.itprojectbackend.common.exception.ErrorCode;
 import com.itprojectbackend.crew.repository.CrewScheduleRepository;
 import com.itprojectbackend.flight.FlightScheduleFinder;
 import com.itprojectbackend.flight.domain.FlightSchedule;
+import com.itprojectbackend.flight.domain.enums.FlightType;
 import com.itprojectbackend.flightdiary.domain.FlightDiary;
+import com.itprojectbackend.flightdiary.dto.FlightDiaryListResponse;
 import com.itprojectbackend.flightdiary.dto.FlightDiaryRequest;
 import com.itprojectbackend.flightdiary.repository.FlightDiaryRepository;
 import com.itprojectbackend.user.UserFinder;
 import com.itprojectbackend.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -34,8 +39,38 @@ public class FlightDiaryService {
                 .content(flightDiaryRequest.content())
                 .flightSchedule(flightSchedule)
                 .writer(user)
+                .isWritten(true)
                 .build();
 
         flightDiaryRepository.save(flightDiary);
+    }
+
+    public List<FlightDiaryListResponse> getFlightDiaryList(Long userId) {
+        User user = userFinder.findByUserId(userId);
+        List<FlightDiary> flightDiaries = flightDiaryRepository.findByWriter(user);
+
+        List<FlightDiaryListResponse> responses = new ArrayList<>();
+
+        for (FlightDiary diary : flightDiaries) {
+            FlightSchedule flightSchedule = diary.getFlightSchedule();
+
+            FlightType flightType = flightSchedule.getCrewSchedules().stream()
+                    .filter(crewSchedule -> crewSchedule.getUser().equals(user))
+                    .findFirst()
+                    .map(crewSchedule -> crewSchedule.getFlightType())
+                    .orElse(null);
+
+            responses.add(FlightDiaryListResponse.builder()
+                    .diaryId(diary.getId())
+                    .flightDate(String.valueOf(flightSchedule.getDepartureDate()))
+                    .departureCode(flightSchedule.getDepartureCode().getCode())
+                    .arrivalCode(flightSchedule.getArrivalCode().getCode())
+                    .flightNumber(flightSchedule.getFlightNumber())
+                    .flightType(flightType)
+                    .isWritten(diary.isWritten())
+                    .build());
+        }
+
+        return responses;
     }
 }

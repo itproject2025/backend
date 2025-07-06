@@ -6,12 +6,14 @@ import com.itprojectbackend.user.domain.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
 public class FlightDiary extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,4 +31,7 @@ public class FlightDiary extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "flight_schedule_id")
     private FlightSchedule flightSchedule;
+
+    @Column(nullable = false)
+    private boolean isWritten;
 }

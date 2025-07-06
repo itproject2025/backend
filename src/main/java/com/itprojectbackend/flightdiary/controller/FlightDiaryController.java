@@ -1,5 +1,6 @@
 package com.itprojectbackend.flightdiary.controller;
 
+import com.itprojectbackend.flightdiary.dto.FlightDiaryListResponse;
 import com.itprojectbackend.flightdiary.dto.FlightDiaryRequest;
 import com.itprojectbackend.flightdiary.service.FlightDiaryService;
 import com.itprojectbackend.user.jwt.CustomUserDetails;
@@ -8,10 +9,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/diaries")
@@ -27,5 +27,12 @@ public class FlightDiaryController {
         Long userId= customUserDetails.getUser().getId();
         flightDiaryService.writeFlightDiary(userId, flightDiaryRequest);
         return ResponseEntity.ok("비행 일기가 작성되었습니다.");
+    }
+
+    @GetMapping
+    @Operation(summary = "비행 일기 조회", description = "해당 유저의 비행 일기를 조회하는 API입니다.")
+    public ResponseEntity<List<FlightDiaryListResponse>>getFlightDiaryList(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        Long userId= customUserDetails.getUser().getId();
+        return ResponseEntity.ok(flightDiaryService.getFlightDiaryList(userId));
     }
 }
