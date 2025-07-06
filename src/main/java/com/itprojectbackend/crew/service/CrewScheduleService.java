@@ -10,6 +10,8 @@ import com.itprojectbackend.crew.dto.CrewScheduleResponse;
 import com.itprojectbackend.crew.repository.CrewScheduleRepository;
 import com.itprojectbackend.flight.domain.FlightSchedule;
 import com.itprojectbackend.flight.repository.FlightRepository;
+import com.itprojectbackend.flightdiary.domain.FlightDiary;
+import com.itprojectbackend.flightdiary.repository.FlightDiaryRepository;
 import com.itprojectbackend.user.UserFinder;
 import com.itprojectbackend.user.domain.User;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +29,7 @@ public class CrewScheduleService {
     private final AirportRepository airportRepository;
     private final FlightRepository flightRepository;
     private final UserFinder userFinder;
+    private final FlightDiaryRepository flightDiaryRepository;
 
     public List<CrewScheduleResponse> getScheduleByUserAndDay(Long userId, int year, int month, int day) {
         LocalDate targetDate=LocalDate.of(year, month, day);
@@ -126,8 +129,15 @@ public class CrewScheduleService {
                 .flightSchedule(flightSchedule)
                 .flightType(crewScheduleRequest.flightType())
                 .build();
-
         crewScheduleRepository.save(crewSchedule);
+
+        FlightDiary diary = FlightDiary.builder()
+                .flightSchedule(flightSchedule)
+                .writer(user)
+                .isWritten(false)
+                .build();
+
+        flightDiaryRepository.save(diary);
     }
 
     public List<CrewScheduleResponse> getScheduleList(Long userId) {
