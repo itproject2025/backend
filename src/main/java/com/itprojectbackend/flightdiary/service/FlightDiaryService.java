@@ -16,6 +16,9 @@ import com.itprojectbackend.flightdiary.repository.FlightDiaryRepository;
 import com.itprojectbackend.user.UserFinder;
 import com.itprojectbackend.user.domain.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cglib.core.Local;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -131,5 +134,34 @@ public class FlightDiaryService {
             throw new CustomException(ErrorCode.UNAUTHORIZED_DIARY_ACCESS);
         }
         flightDiaryRepository.delete(flightDiary);
+    }
+
+    public List<FlightDiaryListResponse> getUnwrittenFlightDiaryList(Long userId) {
+        User user = userFinder.findByUserId(userId);
+        Pageable pageable = PageRequest.of(0,5);
+        List<FlightDiary> flightDiaries = flightDiaryRepository.findUnwrittenDiaries(userId, LocalDateTime.now(),pageable);
+
+        List<FlightDiaryListResponse> responses = new ArrayList<>();
+
+        for (FlightDiary diary : flightDiaries) {
+            FlightSchedule flightSchedule = diary.getFlightSchedule();
+
+            FlightType flightType = flightSchedule.getCrewSchedules().stream()
+                    .filter(crewSchedule -> crewSchedule.getUser().equals(user))
+                    .findFirst()
+                    .map(crewSchedule -> crewSchedule.getFlightType())
+                    .orElse(null);
+
+            responses.add(FlightDiaryListResponse.builder()
+                    .diaryId(diary.getId())
+                    .flightDate(String.valueOf(flightSchedule.getDepartureDate()))
+                    .departureCode(flightSchedule.getDepartureCode().getCode())
+                    .arrivalCode(flightSchedule.getArrivalCode().getCode())
+                    .flightNumber(flightSchedule.getFlightNumber())
+                    .flightType(flightType)
+                    .isWritten(diary.isWritten())
+                    .build());
+        }
+        return responses;
     }
 }

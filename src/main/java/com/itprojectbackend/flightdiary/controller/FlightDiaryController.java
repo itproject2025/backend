@@ -64,4 +64,11 @@ public class FlightDiaryController {
         flightDiaryService.deleteFlightDiary(userId,diaryId);
         return ResponseEntity.ok("해당 비행 일기가 삭제되었습니다.");
     }
+
+    @GetMapping("/unwritten")
+    @Operation(summary = "작성하지 않은 비행일기 조회", description = "해당 유저가 작성하지 않은 비행일기 5개 조회")
+    public ResponseEntity<List<FlightDiaryListResponse>> getUnwrittenFlightDiaryList(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        Long userId= customUserDetails.getUser().getId();
+        return ResponseEntity.ok(flightDiaryService.getUnwrittenFlightDiaryList(userId));
+    }
 }
