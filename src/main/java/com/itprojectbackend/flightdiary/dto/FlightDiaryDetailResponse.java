@@ -15,6 +15,7 @@ public record FlightDiaryDetailResponse(
         LocalDateTime flightDate,
         String duration,
         String authorName,
-        String content
+        String content,
+        String country
 ) {
 }

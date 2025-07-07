@@ -11,7 +11,8 @@ public record FlightDiaryListResponse(
         String arrivalCode,
         String flightNumber,
         FlightType flightType,
-        boolean isWritten
+        boolean isWritten,
+        String country
 ){
 
 }

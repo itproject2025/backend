@@ -80,6 +80,7 @@ public class FlightDiaryService {
                     .flightNumber(flightSchedule.getFlightNumber())
                     .flightType(flightType)
                     .isWritten(diary.isWritten())
+                    .country(flightSchedule.getDepartureCode().getCountry())
                     .build());
         }
 
@@ -108,6 +109,7 @@ public class FlightDiaryService {
                 .duration(formatDuration(flightSchedule.getDepartureDate(),flightSchedule.getArrivalDate()))
                 .authorName(flightDiary.getWriter().getNickname())
                 .content(flightDiary.getContent())
+                .country(flightSchedule.getDepartureCode().getCountry())
                 .build();
 
         return flightDiaryDetailResponse;
@@ -168,6 +170,7 @@ public class FlightDiaryService {
                     .flightNumber(flightSchedule.getFlightNumber())
                     .flightType(flightType)
                     .isWritten(diary.isWritten())
+                    .country(flightSchedule.getDepartureCode().getCountry())
                     .build();
         }).toList();
     }
