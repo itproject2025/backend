@@ -6,6 +6,7 @@ import com.itprojectbackend.flight.dto.FlightSearchRequest;
 import com.itprojectbackend.flight.dto.FlightSearchResponse;
 import com.itprojectbackend.flight.external.AmadeusTokenManager;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -25,6 +26,7 @@ public class FlightService {
 
     private static final String API_URL = "https://test.api.amadeus.com/v2/shopping/flight-offers";
 
+    @Cacheable(value = "flightCache", key = "#request.toString()")
     public List<FlightSearchResponse> searchFlights(FlightSearchRequest request) {
         String accessToken = tokenManager.getAccessToken();
 
