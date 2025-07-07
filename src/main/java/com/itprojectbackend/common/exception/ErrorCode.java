@@ -31,7 +31,8 @@ public enum ErrorCode {
 	UNAUTHORIZED_CREW_SCHEDULE_ACCESS(HttpStatus.UNAUTHORIZED,"해당 유저의 비행 스케줄이 아닙니다."),
 
 	//Diary Error
-	DIARY_NOT_FOUND(HttpStatus.BAD_REQUEST,"존재하지 않는 비행 일기 입니다.");
+	DIARY_NOT_FOUND(HttpStatus.BAD_REQUEST,"존재하지 않는 비행 일기 입니다."),
+	UNAUTHORIZED_DIARY_ACCESS(HttpStatus.UNAUTHORIZED,"해당 유저의 비행 일기가 아닙니다");
 
     private final HttpStatus status;
 	private final String message;
