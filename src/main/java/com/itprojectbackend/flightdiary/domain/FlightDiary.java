@@ -34,4 +34,8 @@ public class FlightDiary extends BaseEntity {
 
     @Column(nullable = false)
     private boolean isWritten;
+
+    public void update(String content){
+        this.content = content;
+    }
 }

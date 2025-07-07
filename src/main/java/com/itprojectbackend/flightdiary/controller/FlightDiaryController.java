@@ -2,6 +2,7 @@ package com.itprojectbackend.flightdiary.controller;
 
 import com.itprojectbackend.flightdiary.dto.FlightDiaryDetailResponse;
 import com.itprojectbackend.flightdiary.dto.FlightDiaryListResponse;
+import com.itprojectbackend.flightdiary.dto.FlightDiaryPatchRequest;
 import com.itprojectbackend.flightdiary.dto.FlightDiaryRequest;
 import com.itprojectbackend.flightdiary.service.FlightDiaryService;
 import com.itprojectbackend.user.jwt.CustomUserDetails;
@@ -43,5 +44,24 @@ public class FlightDiaryController {
                                                                           @PathVariable("diaryId") Long diaryId){
         Long userId= customUserDetails.getUser().getId();
         return ResponseEntity.ok(flightDiaryService.getFlightDiaryDetail(userId,diaryId));
+    }
+
+    @PatchMapping("{diaryId}")
+    @Operation(summary = "비행 일기 수정",description = "해당 비행을 수정하는 API입니다.")
+    public ResponseEntity<String> patchFlightDiary(@AuthenticationPrincipal CustomUserDetails customUserDetails,
+                                                   @PathVariable("diaryId") Long diaryId,
+                                                   @RequestBody FlightDiaryPatchRequest flightDiaryPatchRequest) {
+        Long userId= customUserDetails.getUser().getId();
+        flightDiaryService.patchFlightDiary(userId,diaryId,flightDiaryPatchRequest);
+        return ResponseEntity.ok("해당 비행 일기가 수정되었습니다.");
+    }
+
+    @DeleteMapping("{diaryId}")
+    @Operation(summary = "비행 일기 삭제",description = "해당 비행을 삭제하는 API입니다.")
+    public ResponseEntity<String> deleteFlightDiary(@AuthenticationPrincipal CustomUserDetails customUserDetails,
+                                                    @PathVariable("diaryId") Long diaryId) {
+        Long userId= customUserDetails.getUser().getId();
+        flightDiaryService.deleteFlightDiary(userId,diaryId);
+        return ResponseEntity.ok("해당 비행 일기가 삭제되었습니다.");
     }
 }

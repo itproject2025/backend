@@ -6,15 +6,18 @@ import com.itprojectbackend.crew.repository.CrewScheduleRepository;
 import com.itprojectbackend.flight.FlightScheduleFinder;
 import com.itprojectbackend.flight.domain.FlightSchedule;
 import com.itprojectbackend.flight.domain.enums.FlightType;
+import com.itprojectbackend.flightdiary.FlightDiaryFinder;
 import com.itprojectbackend.flightdiary.domain.FlightDiary;
 import com.itprojectbackend.flightdiary.dto.FlightDiaryDetailResponse;
 import com.itprojectbackend.flightdiary.dto.FlightDiaryListResponse;
+import com.itprojectbackend.flightdiary.dto.FlightDiaryPatchRequest;
 import com.itprojectbackend.flightdiary.dto.FlightDiaryRequest;
 import com.itprojectbackend.flightdiary.repository.FlightDiaryRepository;
 import com.itprojectbackend.user.UserFinder;
 import com.itprojectbackend.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -26,6 +29,7 @@ import java.util.List;
 public class FlightDiaryService {
     private final FlightDiaryRepository flightDiaryRepository;
     private final UserFinder userFinder;
+    private final FlightDiaryFinder flightDiaryFinder;
     private final FlightScheduleFinder flightScheduleFinder;
     private final CrewScheduleRepository crewScheduleRepository;
 
@@ -79,8 +83,7 @@ public class FlightDiaryService {
 
     public FlightDiaryDetailResponse getFlightDiaryDetail(Long userId, Long diaryId) {
         User user = userFinder.findByUserId(userId);
-        FlightDiary flightDiary = flightDiaryRepository.findById(diaryId)
-                .orElseThrow(() -> new CustomException(ErrorCode.DIARY_NOT_FOUND));
+        FlightDiary flightDiary = flightDiaryRepository.findById(diaryId).orElse(null);
         FlightSchedule flightSchedule = flightScheduleFinder.findByFlightScheduleId(flightDiary.getFlightSchedule().getId());
 
         FlightType flightType = flightSchedule.getCrewSchedules().stream()
@@ -110,5 +113,23 @@ public class FlightDiaryService {
         long hours = duration.toHours();
         long minutes = duration.toMinutes() % 60;
         return String.format("%dh %02dm", hours, minutes);
+    }
+
+    @Transactional
+    public void patchFlightDiary(Long userId, Long diaryId, FlightDiaryPatchRequest flightDiaryPatchRequest) {
+        FlightDiary flightDiary = flightDiaryFinder.findByDiaryId(diaryId);
+        if(!flightDiary.getWriter().getId().equals(userId)) {
+            throw new CustomException(ErrorCode.UNAUTHORIZED_DIARY_ACCESS);
+        }
+        flightDiary.update(flightDiaryPatchRequest.content());
+    }
+
+    @Transactional
+    public void deleteFlightDiary(Long userId, Long diaryId) {
+        FlightDiary flightDiary = flightDiaryFinder.findByDiaryId(diaryId);
+        if(!flightDiary.getWriter().getId().equals(userId)) {
+            throw new CustomException(ErrorCode.UNAUTHORIZED_DIARY_ACCESS);
+        }
+        flightDiaryRepository.delete(flightDiary);
     }
 }
