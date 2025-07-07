@@ -25,7 +25,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -136,14 +138,20 @@ public class FlightDiaryService {
         flightDiaryRepository.delete(flightDiary);
     }
 
-    public List<FlightDiaryListResponse> getUnwrittenFlightDiaryList(Long userId) {
+    public List<FlightDiaryListResponse> getHomeFlightDiaryList(Long userId) {
         User user = userFinder.findByUserId(userId);
-        Pageable pageable = PageRequest.of(0,5);
-        List<FlightDiary> flightDiaries = flightDiaryRepository.findUnwrittenDiaries(userId, LocalDateTime.now(),pageable);
 
-        List<FlightDiaryListResponse> responses = new ArrayList<>();
+        Pageable top5 = PageRequest.of(0, 5);
+        Pageable top15 = PageRequest.of(0, 15);
 
-        for (FlightDiary diary : flightDiaries) {
+        List<FlightDiary> unwritten = flightDiaryRepository.findTop5Unwritten(userId, top5);
+        List<FlightDiary> written = flightDiaryRepository.findTop15Written(userId, top15);
+
+        List<FlightDiary> combined = new ArrayList<>();
+        combined.addAll(unwritten);
+        combined.addAll(written);
+
+        return combined.stream().map(diary -> {
             FlightSchedule flightSchedule = diary.getFlightSchedule();
 
             FlightType flightType = flightSchedule.getCrewSchedules().stream()
@@ -152,7 +160,7 @@ public class FlightDiaryService {
                     .map(crewSchedule -> crewSchedule.getFlightType())
                     .orElse(null);
 
-            responses.add(FlightDiaryListResponse.builder()
+            return FlightDiaryListResponse.builder()
                     .diaryId(diary.getId())
                     .flightDate(String.valueOf(flightSchedule.getDepartureDate()))
                     .departureCode(flightSchedule.getDepartureCode().getCode())
@@ -160,8 +168,7 @@ public class FlightDiaryService {
                     .flightNumber(flightSchedule.getFlightNumber())
                     .flightType(flightType)
                     .isWritten(diary.isWritten())
-                    .build());
-        }
-        return responses;
+                    .build();
+        }).toList();
     }
 }
