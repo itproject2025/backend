@@ -18,11 +18,8 @@ public record CrewScheduleResponse(
         @Schema(description = "도착 공항 코드", example = "CJU")
         String arrivalAirport,
 
-        @Schema(description = "지속 시간(시)", example = "1")
-        int durationHour,
-
-        @Schema(description = "지속 시간(분)", example = "20")
-        int durationMinute,
+        @Schema(description = "지속 시간", example = "1m 30s")
+        String duration,
 
         @Schema(description = "출발 시간", example = "2025-06-27T08:00:00")
         LocalDateTime departureDate,

@@ -28,7 +28,10 @@ public enum ErrorCode {
 	//Crew Error
 	FLIGHT_SCHEDULE_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 등록된 비행 스케줄입니다."),
 	CREW_SCHEDULE_NOT_FOUND(HttpStatus.BAD_REQUEST,"존재하지 않는 비행 스케줄입니다."),
-	UNAUTHORIZED_CREW_SCHEDULE_ACCESS(HttpStatus.UNAUTHORIZED,"해당 유저의 비행 스케줄이 아닙니다.");
+	UNAUTHORIZED_CREW_SCHEDULE_ACCESS(HttpStatus.UNAUTHORIZED,"해당 유저의 비행 스케줄이 아닙니다."),
+
+	//Diary Error
+	DIARY_NOT_FOUND(HttpStatus.BAD_REQUEST,"존재하지 않는 비행 일기 입니다.");
 
     private final HttpStatus status;
 	private final String message;

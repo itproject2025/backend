@@ -7,6 +7,7 @@ import com.itprojectbackend.flight.FlightScheduleFinder;
 import com.itprojectbackend.flight.domain.FlightSchedule;
 import com.itprojectbackend.flight.domain.enums.FlightType;
 import com.itprojectbackend.flightdiary.domain.FlightDiary;
+import com.itprojectbackend.flightdiary.dto.FlightDiaryDetailResponse;
 import com.itprojectbackend.flightdiary.dto.FlightDiaryListResponse;
 import com.itprojectbackend.flightdiary.dto.FlightDiaryRequest;
 import com.itprojectbackend.flightdiary.repository.FlightDiaryRepository;
@@ -15,6 +16,8 @@ import com.itprojectbackend.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -72,5 +75,40 @@ public class FlightDiaryService {
         }
 
         return responses;
+    }
+
+    public FlightDiaryDetailResponse getFlightDiaryDetail(Long userId, Long diaryId) {
+        User user = userFinder.findByUserId(userId);
+        FlightDiary flightDiary = flightDiaryRepository.findById(diaryId)
+                .orElseThrow(() -> new CustomException(ErrorCode.DIARY_NOT_FOUND));
+        FlightSchedule flightSchedule = flightScheduleFinder.findByFlightScheduleId(flightDiary.getFlightSchedule().getId());
+
+        FlightType flightType = flightSchedule.getCrewSchedules().stream()
+                .filter(crewSchedule -> crewSchedule.getUser().equals(user))
+                .findFirst()
+                .map(crewSchedule -> crewSchedule.getFlightType())
+                .orElse(null);
+
+
+        FlightDiaryDetailResponse flightDiaryDetailResponse=FlightDiaryDetailResponse.builder()
+                .diaryId(flightDiary.getId())
+                .departureCode(flightSchedule.getDepartureCode().getCode())
+                .departureFullName(flightSchedule.getDepartureCode().getName())
+                .flightNumber(flightSchedule.getFlightNumber())
+                .flightType(flightType)
+                .flightDate(flightSchedule.getDepartureDate())
+                .duration(formatDuration(flightSchedule.getDepartureDate(),flightSchedule.getArrivalDate()))
+                .authorName(flightDiary.getWriter().getNickname())
+                .content(flightDiary.getContent())
+                .build();
+
+        return flightDiaryDetailResponse;
+    }
+
+    public String formatDuration(LocalDateTime departureTime, LocalDateTime arrivalTime) {
+        Duration duration = Duration.between(departureTime, arrivalTime);
+        long hours = duration.toHours();
+        long minutes = duration.toMinutes() % 60;
+        return String.format("%dh %02dm", hours, minutes);
     }
 }
