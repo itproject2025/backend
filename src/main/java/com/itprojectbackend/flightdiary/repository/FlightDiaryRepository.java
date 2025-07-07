@@ -21,7 +21,6 @@ public interface FlightDiaryRepository extends JpaRepository<FlightDiary, Long> 
 
     Optional<FlightDiary> findById(Long diaryId);
 
-    List<FlightDiary> findByWriterIdOrderByFlightScheduleDepartureDateDesc(Long userId, Pageable pageable);
 
     @Query("""
     SELECT d FROM FlightDiary d
