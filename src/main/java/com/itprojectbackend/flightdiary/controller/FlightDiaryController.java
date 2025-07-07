@@ -65,10 +65,10 @@ public class FlightDiaryController {
         return ResponseEntity.ok("해당 비행 일기가 삭제되었습니다.");
     }
 
-    @GetMapping("/unwritten")
-    @Operation(summary = "작성하지 않은 비행일기 조회", description = "해당 유저가 작성하지 않은 비행일기 5개 조회")
+    @GetMapping("/home")
+    @Operation(summary = "비행 홈 조회", description = "비행 일기 최신 순으로 20개 조회, 작성하지 않은 비행일기 최대 5개, 작성한 비행일기 최대 15개 조회됩니다. ")
     public ResponseEntity<List<FlightDiaryListResponse>> getUnwrittenFlightDiaryList(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
         Long userId= customUserDetails.getUser().getId();
-        return ResponseEntity.ok(flightDiaryService.getUnwrittenFlightDiaryList(userId));
+        return ResponseEntity.ok(flightDiaryService.getHomeFlightDiaryList(userId));
     }
 }
