@@ -41,13 +41,13 @@ public class CrewScheduleService {
         return schedules.stream()
                 .map(cs-> {
                     FlightSchedule fs=cs.getFlightSchedule();
+                    String duration=formatDuration(fs.getDepartureDate(),fs.getArrivalDate());
                     return new CrewScheduleResponse(
                             cs.getId(),
                             fs.getFlightNumber(),
                             fs.getDepartureCode().getCode(),
                             fs.getArrivalCode().getCode(),
-                            fs.getDuration()/60,
-                            fs.getDuration()%60,
+                            duration,
                             fs.getDepartureDate(),
                             fs.getArrivalDate(),
                             cs.getFlightType()
@@ -66,13 +66,13 @@ public class CrewScheduleService {
         return schedules.stream()
                 .map(cs->{
                     FlightSchedule fs=cs.getFlightSchedule();
+                    String duration=formatDuration(fs.getDepartureDate(),fs.getArrivalDate());
                     return new CrewScheduleResponse(
                             cs.getId(),
                             fs.getFlightNumber(),
                             fs.getDepartureCode().getCode(),
                             fs.getArrivalCode().getCode(),
-                            fs.getDuration()/60,
-                            fs.getDuration()%60,
+                            duration,
                             fs.getDepartureDate(),
                             fs.getArrivalDate(),
                             cs.getFlightType()
@@ -150,23 +150,27 @@ public class CrewScheduleService {
                     LocalDateTime departureTime = flight.getDepartureDate();
                     LocalDateTime arrivalTime = flight.getArrivalDate();
 
-                    long totalMinute= Duration.between(departureTime, arrivalTime).toMinutes();
-                    int durationHour = (int) (totalMinute/60);
-                    int durationMinute = (int) (totalMinute%60);
+                    String duration = formatDuration(departureTime, arrivalTime);
 
                     return new CrewScheduleResponse(
                             schedule.getId(),
                             flight.getFlightNumber(),
                             flight.getDepartureCode().getCode(),
                             flight.getArrivalCode().getCode(),
-                            durationHour,
-                            durationMinute,
+                            duration,
                             departureTime,
                             arrivalTime,
                             schedule.getFlightType()
                     );
                 })
                 .toList();
+    }
+
+    public String formatDuration(LocalDateTime departureTime, LocalDateTime arrivalTime) {
+        Duration duration = Duration.between(departureTime, arrivalTime);
+        long hours = duration.toHours();
+        long minutes = duration.toMinutes() % 60;
+        return String.format("%dh %02dm", hours, minutes);
     }
 
     public void deleteCrewSchedule(Long userId, Long id) {

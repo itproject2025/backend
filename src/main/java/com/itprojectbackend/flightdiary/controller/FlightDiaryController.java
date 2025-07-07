@@ -1,5 +1,6 @@
 package com.itprojectbackend.flightdiary.controller;
 
+import com.itprojectbackend.flightdiary.dto.FlightDiaryDetailResponse;
 import com.itprojectbackend.flightdiary.dto.FlightDiaryListResponse;
 import com.itprojectbackend.flightdiary.dto.FlightDiaryRequest;
 import com.itprojectbackend.flightdiary.service.FlightDiaryService;
@@ -31,8 +32,16 @@ public class FlightDiaryController {
 
     @GetMapping
     @Operation(summary = "비행 일기 조회", description = "해당 유저의 비행 일기를 조회하는 API입니다.")
-    public ResponseEntity<List<FlightDiaryListResponse>>getFlightDiaryList(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    public ResponseEntity<List<FlightDiaryListResponse>> getFlightDiaryList(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
         Long userId= customUserDetails.getUser().getId();
         return ResponseEntity.ok(flightDiaryService.getFlightDiaryList(userId));
+    }
+
+    @GetMapping("{diaryId}")
+    @Operation(summary = "비행 일기 상세 조회", description = "해당 비행을 상세 조회하는 API입니다.")
+    public ResponseEntity<FlightDiaryDetailResponse> getFlightDiaryDetail(@AuthenticationPrincipal CustomUserDetails customUserDetails,
+                                                                          @PathVariable("diaryId") Long diaryId){
+        Long userId= customUserDetails.getUser().getId();
+        return ResponseEntity.ok(flightDiaryService.getFlightDiaryDetail(userId,diaryId));
     }
 }
