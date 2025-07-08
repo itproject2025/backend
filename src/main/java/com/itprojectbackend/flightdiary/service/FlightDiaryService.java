@@ -1,5 +1,6 @@
 package com.itprojectbackend.flightdiary.service;
 
+import com.itprojectbackend.airport.domain.Airport;
 import com.itprojectbackend.common.exception.CustomException;
 import com.itprojectbackend.common.exception.ErrorCode;
 import com.itprojectbackend.crew.repository.CrewScheduleRepository;
@@ -80,7 +81,7 @@ public class FlightDiaryService {
                     .flightNumber(flightSchedule.getFlightNumber())
                     .flightType(flightType)
                     .isWritten(diary.isWritten())
-                    .country(flightSchedule.getDepartureCode().getCountry())
+                    .country(getCountry(diary))
                     .build());
         }
 
@@ -109,7 +110,7 @@ public class FlightDiaryService {
                 .duration(formatDuration(flightSchedule.getDepartureDate(),flightSchedule.getArrivalDate()))
                 .authorName(flightDiary.getWriter().getNickname())
                 .content(flightDiary.getContent())
-                .country(flightSchedule.getDepartureCode().getCountry())
+                .country(getCountry(flightDiary))
                 .build();
 
         return flightDiaryDetailResponse;
@@ -170,8 +171,24 @@ public class FlightDiaryService {
                     .flightNumber(flightSchedule.getFlightNumber())
                     .flightType(flightType)
                     .isWritten(diary.isWritten())
-                    .country(flightSchedule.getDepartureCode().getCountry())
+                    .country(getCountry(diary))
                     .build();
         }).toList();
+
+    }
+
+    private String getCountry(FlightDiary flightDiary) {
+        String baseAirport = flightDiary.getWriter().getBaseAirport().getCode();
+        FlightSchedule flightSchedule = flightDiary.getFlightSchedule();
+        String departureCode = flightSchedule.getDepartureCode().getCode();
+        String arrivalCode = flightSchedule.getArrivalCode().getCode();
+
+        if(baseAirport.equals(departureCode)){
+            return flightSchedule.getArrivalCode().getCountry();
+        } else if(baseAirport.equals(arrivalCode)){
+            return flightSchedule.getDepartureCode().getCountry();
+        }else{
+            return flightSchedule.getArrivalCode().getCountry();
+        }
     }
 }
