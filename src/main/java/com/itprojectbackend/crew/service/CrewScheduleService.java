@@ -50,7 +50,9 @@ public class CrewScheduleService {
                             duration,
                             fs.getDepartureDate(),
                             fs.getArrivalDate(),
-                            cs.getFlightType()
+                            cs.getFlightType(),
+                            fs.getDepartureCode().getCountry(),
+                            fs.getArrivalCode().getCountry()
                     );
                 })
                 .toList();
@@ -75,7 +77,9 @@ public class CrewScheduleService {
                             duration,
                             fs.getDepartureDate(),
                             fs.getArrivalDate(),
-                            cs.getFlightType()
+                            cs.getFlightType(),
+                            fs.getDepartureCode().getCountry(),
+                            fs.getArrivalCode().getCountry()
                     );
                 })
                 .toList();
@@ -160,7 +164,9 @@ public class CrewScheduleService {
                             duration,
                             departureTime,
                             arrivalTime,
-                            schedule.getFlightType()
+                            schedule.getFlightType(),
+                            flight.getDepartureCode().getCountry(),
+                            flight.getArrivalCode().getCountry()
                     );
                 })
                 .toList();

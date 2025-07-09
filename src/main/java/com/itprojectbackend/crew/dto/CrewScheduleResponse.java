@@ -28,6 +28,12 @@ public record CrewScheduleResponse(
         LocalDateTime arrivalDate,
 
         @Schema(description = "비행 타입", example = "STANDBY")
-        FlightType flightType
+        FlightType flightType,
+
+        @Schema(description = "출발 국가", example = "KR")
+        String departureCountry,
+
+        @Schema(description = "도착 국가", example = "JP")
+        String arrivalCountry
 ) {
 }
