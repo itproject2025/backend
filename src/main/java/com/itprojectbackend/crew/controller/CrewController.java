@@ -2,6 +2,7 @@ package com.itprojectbackend.crew.controller;
 
 import com.itprojectbackend.crew.dto.CrewScheduleRequest;
 import com.itprojectbackend.crew.dto.CrewScheduleResponse;
+import com.itprojectbackend.crew.dto.CrewScheduledetailResponse;
 import com.itprojectbackend.crew.service.CrewScheduleService;
 import com.itprojectbackend.user.jwt.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
@@ -60,12 +61,20 @@ public class CrewController {
         return ResponseEntity.ok(crewScheduleService.getScheduleList(userId));
     }
 
-    @DeleteMapping("{scheduleId}")
+    @DeleteMapping("/flights/{scheduleId}")
     @Operation(summary = "비행 스케줄 삭제", description = "해당 유저의 비행 스케줄을 삭제합니다.")
     public ResponseEntity<String> deleteCrewSchedule(@AuthenticationPrincipal CustomUserDetails customUserDetails,
                                                      @PathVariable("scheduleId") Long scheduleId){
         Long userId=customUserDetails.getUser().getId();
         crewScheduleService.deleteCrewSchedule(userId, scheduleId);
         return ResponseEntity.ok("비행 스케줄이 삭제되었습니다.");
+    }
+
+    @GetMapping("/flights/{scheduleId}")
+    @Operation(summary = "비행 스케줄 상세 조회", description = "해당 비행 스케줄을 상세 조회합니다.")
+    public ResponseEntity<CrewScheduledetailResponse> getCrewScheduleDetail(@AuthenticationPrincipal CustomUserDetails customUserDetails,
+                                                                            @PathVariable("scheduleId") Long scheduleId){
+        Long userId=customUserDetails.getUser().getId();
+        return ResponseEntity.ok(crewScheduleService.getScheduleDetail(userId, scheduleId));
     }
 }
