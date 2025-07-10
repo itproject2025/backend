@@ -4,9 +4,13 @@ import com.itprojectbackend.airport.domain.Airport;
 import com.itprojectbackend.airport.repository.AirportRepository;
 import com.itprojectbackend.common.exception.CustomException;
 import com.itprojectbackend.common.exception.ErrorCode;
+import com.itprojectbackend.crew.CrewScheduleFinder;
 import com.itprojectbackend.crew.domain.CrewSchedule;
 import com.itprojectbackend.crew.dto.CrewScheduleRequest;
 import com.itprojectbackend.crew.dto.CrewScheduleResponse;
+import com.itprojectbackend.crew.dto.CrewScheduledetailResponse;
+import com.itprojectbackend.crew.dto.WeatherResponse;
+import com.itprojectbackend.crew.external.WeatherClient;
 import com.itprojectbackend.crew.repository.CrewScheduleRepository;
 import com.itprojectbackend.flight.domain.FlightSchedule;
 import com.itprojectbackend.flight.repository.FlightRepository;
@@ -29,7 +33,9 @@ public class CrewScheduleService {
     private final AirportRepository airportRepository;
     private final FlightRepository flightRepository;
     private final UserFinder userFinder;
+    private final CrewScheduleFinder crewScheduleFinder;
     private final FlightDiaryRepository flightDiaryRepository;
+    private final WeatherClient weatherClient;
 
     public List<CrewScheduleResponse> getScheduleByUserAndDay(Long userId, int year, int month, int day) {
         LocalDate targetDate=LocalDate.of(year, month, day);
@@ -181,8 +187,7 @@ public class CrewScheduleService {
 
     public void deleteCrewSchedule(Long userId, Long id) {
         User user=userFinder.findByUserId(userId);
-        CrewSchedule crewSchedule=crewScheduleRepository.findById(id)
-                .orElseThrow(()-> new CustomException(ErrorCode.CREW_SCHEDULE_NOT_FOUND));
+        CrewSchedule crewSchedule=crewScheduleFinder.findById(id);
 
         if(!crewSchedule.getUser().getId().equals(user.getId())) {
             throw new CustomException(ErrorCode.UNAUTHORIZED_CREW_SCHEDULE_ACCESS);
@@ -193,5 +198,39 @@ public class CrewScheduleService {
 
         flightDiaryRepository.delete(flightDiary);
         crewScheduleRepository.delete(crewSchedule);
+    }
+
+    public CrewScheduledetailResponse getScheduleDetail(Long userId, Long scheduleId) {
+        User user=userFinder.findByUserId(userId);
+        CrewSchedule crewSchedule=crewScheduleFinder.findById(scheduleId);
+
+        if(!crewSchedule.getUser().getId().equals(user.getId())) {
+            throw new CustomException(ErrorCode.UNAUTHORIZED_CREW_SCHEDULE_ACCESS);
+        }
+
+        FlightSchedule flightSchedule = crewSchedule.getFlightSchedule();
+        WeatherResponse departureWeatherResponse = weatherClient.getWeatherByCity(flightSchedule.getDepartureCode().getCity());
+
+        WeatherResponse arrivalWeatherResponse = weatherClient.getWeatherByCity(flightSchedule.getArrivalCode().getCity());
+
+        LocalDateTime departureTime = flightSchedule.getDepartureDate();
+        LocalDateTime arrivalTime = flightSchedule.getArrivalDate();
+
+        String duration = formatDuration(departureTime, arrivalTime);
+
+        return new CrewScheduledetailResponse(
+                scheduleId,
+                flightSchedule.getFlightNumber(),
+                flightSchedule.getDepartureCode().getCode(),
+                flightSchedule.getArrivalCode().getCode(),
+                duration,
+                departureTime,
+                arrivalTime,
+                crewSchedule.getFlightType(),
+                flightSchedule.getDepartureCode().getCountry(),
+                flightSchedule.getArrivalCode().getCountry(),
+                departureWeatherResponse,
+                arrivalWeatherResponse
+        );
     }
 }
