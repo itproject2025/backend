@@ -1,5 +1,6 @@
 package com.itprojectbackend.crew.controller;
 
+import com.itprojectbackend.common.domain.ApiResponse;
 import com.itprojectbackend.crew.dto.CrewScheduleRequest;
 import com.itprojectbackend.crew.dto.CrewScheduleResponse;
 import com.itprojectbackend.crew.dto.CrewScheduledetailResponse;
@@ -47,11 +48,11 @@ public class CrewController {
 
     @PostMapping("/add/flight")
     @Operation(summary = "비행 스케줄 추가", description = "해당 유저의 비행 스케줄을 추가합니다.")
-    public ResponseEntity<String> addCrewSchedule(@AuthenticationPrincipal CustomUserDetails customUserDetails,
+    public ResponseEntity<ApiResponse> addCrewSchedule(@AuthenticationPrincipal CustomUserDetails customUserDetails,
                                                   @RequestBody CrewScheduleRequest crewScheduleRequest) {
         Long userId=customUserDetails.getUser().getId();
         crewScheduleService.addCrewSchedule(userId, crewScheduleRequest);
-        return ResponseEntity.ok("비행 스케줄이 성공적으로 추가되었습니다.");
+        return ResponseEntity.ok(ApiResponse.success("비행 스케줄이 성공적으로 추가되었습니다."));
     }
 
     @GetMapping("/flights")
@@ -63,11 +64,11 @@ public class CrewController {
 
     @DeleteMapping("/flights/{scheduleId}")
     @Operation(summary = "비행 스케줄 삭제", description = "해당 유저의 비행 스케줄을 삭제합니다.")
-    public ResponseEntity<String> deleteCrewSchedule(@AuthenticationPrincipal CustomUserDetails customUserDetails,
+    public ResponseEntity<ApiResponse> deleteCrewSchedule(@AuthenticationPrincipal CustomUserDetails customUserDetails,
                                                      @PathVariable("scheduleId") Long scheduleId){
         Long userId=customUserDetails.getUser().getId();
         crewScheduleService.deleteCrewSchedule(userId, scheduleId);
-        return ResponseEntity.ok("비행 스케줄이 삭제되었습니다.");
+        return ResponseEntity.ok(ApiResponse.success("비행 스케줄이 삭제되었습니다."));
     }
 
     @GetMapping("/flights/{scheduleId}")

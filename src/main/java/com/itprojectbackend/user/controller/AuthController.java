@@ -1,5 +1,6 @@
 package com.itprojectbackend.user.controller;
 
+import com.itprojectbackend.common.domain.ApiResponse;
 import com.itprojectbackend.user.dto.LoginRequest;
 import com.itprojectbackend.user.dto.LoginResponse;
 import com.itprojectbackend.user.dto.RegisterRequest;
@@ -24,9 +25,9 @@ public class AuthController {
 
     @PostMapping("/users/register")
     @Operation(summary = "일반 회원 가입", description = "이메일, 비밀번호로 회원가입하는 API입니다.")
-    public ResponseEntity<String> register(@RequestBody RegisterRequest registerRequest) {
+    public ResponseEntity<ApiResponse> register(@RequestBody RegisterRequest registerRequest) {
         authService.register(registerRequest);
-        return ResponseEntity.ok("회원가입이 완료되었습니다.");
+        return ResponseEntity.ok(ApiResponse.success("회원가입이 완료되었습니다."));
     }
 
     @PostMapping("/auth/login")
