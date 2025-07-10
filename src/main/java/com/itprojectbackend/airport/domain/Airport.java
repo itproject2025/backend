@@ -22,4 +22,6 @@ public class Airport extends BaseEntity {
     private String country;
 
     private String flagImageUrl;
+
+    private String city;
 }
