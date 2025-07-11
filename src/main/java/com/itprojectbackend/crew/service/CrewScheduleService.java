@@ -92,30 +92,20 @@ public class CrewScheduleService {
     }
 
     public void addCrewSchedule(Long userId, CrewScheduleRequest crewScheduleRequest) {
-        if (flightRepository.existsByFlightNumberAndDepartureDateAndArrivalDate(
-                crewScheduleRequest.flightIataNumber(),
-                crewScheduleRequest.departureScheduledTime(),
-                crewScheduleRequest.arrivalScheduledTime())) {
-
-            throw new CustomException(ErrorCode.FLIGHT_SCHEDULE_ALREADY_EXISTS);
-        }
-
         User user = userFinder.findByUserId(userId);
-        Airport departure = airportRepository.findByCode(crewScheduleRequest.departureAirportIata());
 
+        Airport departure = airportRepository.findByCode(crewScheduleRequest.departureAirportIata());
         if (departure == null) {
-            departure = Airport.builder()
-                    .code(crewScheduleRequest.departureAirportIata())
-                    .build();
-            airportRepository.save(departure);
+            departure = airportRepository.save(
+                    Airport.builder().code(crewScheduleRequest.departureAirportIata()).build()
+            );
         }
 
         Airport arrival = airportRepository.findByCode(crewScheduleRequest.arrivalAirportIata());
         if (arrival == null) {
-            arrival = Airport.builder()
-                    .code(crewScheduleRequest.arrivalAirportIata())
-                    .build();
-            airportRepository.save(arrival);
+            arrival = airportRepository.save(
+                    Airport.builder().code(crewScheduleRequest.arrivalAirportIata()).build()
+            );
         }
         Duration duration = Duration.between(
                 crewScheduleRequest.departureScheduledTime(),
@@ -134,20 +124,22 @@ public class CrewScheduleService {
 
         flightRepository.save(flightSchedule);
 
-        CrewSchedule crewSchedule=CrewSchedule.builder()
+        if (crewScheduleRepository.existsByUserAndFlightSchedule(user, flightSchedule)) {
+            throw new CustomException(ErrorCode.FLIGHT_SCHEDULE_ALREADY_EXISTS);
+        }
+
+        CrewSchedule crewSchedule = CrewSchedule.builder()
                 .user(user)
                 .flightSchedule(flightSchedule)
                 .flightType(crewScheduleRequest.flightType())
                 .build();
         crewScheduleRepository.save(crewSchedule);
 
-        FlightDiary diary = FlightDiary.builder()
+        flightDiaryRepository.save(FlightDiary.builder()
                 .flightSchedule(flightSchedule)
                 .writer(user)
                 .isWritten(false)
-                .build();
-
-        flightDiaryRepository.save(diary);
+                .build());
     }
 
     public List<CrewScheduleResponse> getScheduleList(Long userId) {
