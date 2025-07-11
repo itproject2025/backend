@@ -24,26 +24,28 @@ public class CrewController {
     private final CrewScheduleService crewScheduleService;
 
     @GetMapping("/calendar/day")
-    @Operation(summary = "일별 비행 스케줄 목록 조회", description = "해당 유저의 일별 비행 스케줄 목록를 조회합니다.")
-    public ResponseEntity<List<CrewScheduleResponse>> getCrewSchedule(@AuthenticationPrincipal CustomUserDetails customUserDetails,
-                                                                      @RequestParam(required = false) int year,
-                                                                      @RequestParam(required = false) int month,
-                                                                      @RequestParam(required = false) int day) {
-        Long userId=customUserDetails.getUser().getId();
-        List<CrewScheduleResponse> result=crewScheduleService.getScheduleByUserAndDay(userId, year, month, day);
-        return ResponseEntity.ok(result);
+    @Operation(summary = "일별 비행 스케줄 목록 조회", description = "해당 유저의 일별 비행 스케줄 목록을 조회합니다.")
+    public ResponseEntity<ApiResponse<List<CrewScheduleResponse>>> getCrewSchedule(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @RequestParam(required = false) int year,
+            @RequestParam(required = false) int month,
+            @RequestParam(required = false) int day) {
 
+        Long userId = customUserDetails.getUser().getId();
+        List<CrewScheduleResponse> result = crewScheduleService.getScheduleByUserAndDay(userId, year, month, day);
+        return ResponseEntity.ok(ApiResponse.success("일별 비행 스케줄 조회 성공", result));
     }
 
     @GetMapping("/calendar/month")
     @Operation(summary = "월별 비행 스케줄 목록 조회", description = "해당 유저의 월별 비행 스케줄 목록을 조회합니다.")
-    public ResponseEntity<List<CrewScheduleResponse>> getMonthCrewSchedule(@AuthenticationPrincipal CustomUserDetails customUserDetail,
-                                                                           @RequestParam(required = false) int year,
-                                                                           @RequestParam(required = false) int month){
-        Long userId=customUserDetail.getUser().getId();
-        List<CrewScheduleResponse> result=crewScheduleService.getScheduleByUserAndMonth(userId,year,month);
-        return ResponseEntity.ok(result);
+    public ResponseEntity<ApiResponse<List<CrewScheduleResponse>>> getMonthCrewSchedule(
+            @AuthenticationPrincipal CustomUserDetails customUserDetail,
+            @RequestParam(required = false) int year,
+            @RequestParam(required = false) int month) {
 
+        Long userId = customUserDetail.getUser().getId();
+        List<CrewScheduleResponse> result = crewScheduleService.getScheduleByUserAndMonth(userId, year, month);
+        return ResponseEntity.ok(ApiResponse.success("월별 비행 스케줄 조회 성공", result));
     }
 
     @PostMapping("/add/flight")
@@ -57,9 +59,10 @@ public class CrewController {
 
     @GetMapping("/flights")
     @Operation(summary = "비행 스케줄 전체 조회", description = "해당 유저의 전체 비행 스케줄을 조회합니다.")
-    public ResponseEntity<List<CrewScheduleResponse>> getCrewScheduleList(@AuthenticationPrincipal CustomUserDetails customUserDetails){
+    public ResponseEntity<ApiResponse<List<CrewScheduleResponse>>> getCrewScheduleList(@AuthenticationPrincipal CustomUserDetails customUserDetails){
         Long userId=customUserDetails.getUser().getId();
-        return ResponseEntity.ok(crewScheduleService.getScheduleList(userId));
+        List<CrewScheduleResponse> scheduleList = crewScheduleService.getScheduleList(userId);
+        return ResponseEntity.ok(ApiResponse.success("전체 비행 스케줄 조회 성공", scheduleList));
     }
 
     @DeleteMapping("/flights/{scheduleId}")
@@ -73,9 +76,10 @@ public class CrewController {
 
     @GetMapping("/flights/{scheduleId}")
     @Operation(summary = "비행 스케줄 상세 조회", description = "해당 비행 스케줄을 상세 조회합니다.")
-    public ResponseEntity<CrewScheduledetailResponse> getCrewScheduleDetail(@AuthenticationPrincipal CustomUserDetails customUserDetails,
+    public ResponseEntity<ApiResponse<CrewScheduledetailResponse>> getCrewScheduleDetail(@AuthenticationPrincipal CustomUserDetails customUserDetails,
                                                                             @PathVariable("scheduleId") Long scheduleId){
         Long userId=customUserDetails.getUser().getId();
-        return ResponseEntity.ok(crewScheduleService.getScheduleDetail(userId, scheduleId));
+        CrewScheduledetailResponse detail = crewScheduleService.getScheduleDetail(userId, scheduleId);
+        return ResponseEntity.ok(ApiResponse.success("비행 스케줄 상세 조회 성공", detail));
     }
 }

@@ -1,5 +1,6 @@
 package com.itprojectbackend.flight.controller;
 
+import com.itprojectbackend.common.domain.ApiResponse;
 import com.itprojectbackend.flight.dto.FlightSearchRequest;
 import com.itprojectbackend.flight.dto.FlightSearchResponse;
 import com.itprojectbackend.flight.service.FlightService;
@@ -21,9 +22,11 @@ public class FlightController {
 
     @PostMapping("/flights/schedule")
     @Operation(summary = "공항 스케줄 조회", description = "비행 추가 시 스케줄을 조회하는 API입니다.")
-    public ResponseEntity<List<FlightSearchResponse>> searchFlights(@RequestBody FlightSearchRequest flightSearchRequest) {
-        List<FlightSearchResponse> results=flightService.searchFlights(flightSearchRequest);
-        return ResponseEntity.ok(results);
+    public ResponseEntity<ApiResponse<List<FlightSearchResponse>>> searchFlights(
+            @RequestBody FlightSearchRequest flightSearchRequest) {
+
+        List<FlightSearchResponse> results = flightService.searchFlights(flightSearchRequest);
+        return ResponseEntity.ok(ApiResponse.success("공항 스케줄 조회 성공", results));
     }
 
 }

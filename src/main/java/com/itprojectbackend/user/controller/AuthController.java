@@ -32,8 +32,8 @@ public class AuthController {
 
     @PostMapping("/auth/login")
     @Operation(summary = "일반 로그인", description = "이메일, 비밀번호를 받아 로그인하는 API입니다.")
-    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest) {
-        LoginResponse loginResponse= authService.login(loginRequest);
-        return ResponseEntity.ok(loginResponse);
+    public ResponseEntity<ApiResponse<LoginResponse>> login(@RequestBody LoginRequest loginRequest) {
+        LoginResponse loginResponse = authService.login(loginRequest);
+        return ResponseEntity.ok(ApiResponse.success("로그인 성공", loginResponse));
     }
 }

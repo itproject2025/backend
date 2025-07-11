@@ -4,18 +4,25 @@ package com.itprojectbackend.common.domain;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @AllArgsConstructor
-public class ApiResponse {
-    private final boolean isSuccess;
-    private final String message;
+@NoArgsConstructor
+public class ApiResponse<T> {
+    private boolean isSuccess;
+    private String message;
+    private T data;
 
-    public static ApiResponse success(String message) {
-        return new ApiResponse(true, message);
+    public static <T> ApiResponse<T> success(String message, T data) {
+        return new ApiResponse<>(true, message, data);
     }
 
-    public static ApiResponse failure(String message) {
-        return new ApiResponse(false, message);
+    public static <T> ApiResponse<T> success(String message) {
+        return new ApiResponse<>(true, message, null);
+    }
+
+    public static <T> ApiResponse<T> failure(String message) {
+        return new ApiResponse<>(false, message, null);
     }
 }

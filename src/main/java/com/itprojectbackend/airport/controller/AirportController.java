@@ -2,6 +2,7 @@ package com.itprojectbackend.airport.controller;
 
 import com.itprojectbackend.airport.dto.AirportResponse;
 import com.itprojectbackend.airport.service.AirportService;
+import com.itprojectbackend.common.domain.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +23,8 @@ public class AirportController {
 
     @GetMapping
     @Operation(summary = "공항 코드 조회", description = "키워드를 받아 해당하는 공항 코드 리스트를 조회합니다.")
-    public ResponseEntity<List<AirportResponse>> searchAirport(@RequestParam(name = "keyword") String keyword) {
-        return ResponseEntity.ok(airportService.searchAirports(keyword));
+    public ResponseEntity<ApiResponse<List<AirportResponse>>> searchAirport(@RequestParam(name = "keyword") String keyword) {
+        List<AirportResponse> result = airportService.searchAirports(keyword);
+        return ResponseEntity.ok(ApiResponse.success("공항 코드 조회 성공", result));
     }
 }
