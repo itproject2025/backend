@@ -12,7 +12,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -26,6 +29,8 @@ public class FlightService {
 
     private static final String API_URL = "https://test.api.amadeus.com/v2/shopping/flight-offers";
 
+
+    //비행 시간 순 설정
     @Cacheable(value = "flightCache", key = "#request.toString()")
     public List<FlightSearchResponse> searchFlights(FlightSearchRequest request) {
         String accessToken = tokenManager.getAccessToken();
@@ -52,6 +57,7 @@ public class FlightService {
 
         // 2. Parse JSON response
         List<FlightSearchResponse> results = new ArrayList<>();
+        DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
         try {
             JsonNode root = objectMapper.readTree(response.getBody());
             JsonNode data = root.path("data");
@@ -79,6 +85,9 @@ public class FlightService {
                         .airlineIataCode(airlineCode)
                         .build());
             }
+            results.sort(Comparator.comparing(
+                    r -> LocalDateTime.parse(r.departureScheduledTime(), formatter)
+            ));
 
         } catch (Exception e) {
             throw new RuntimeException("Amadeus 응답 파싱 실패", e);
