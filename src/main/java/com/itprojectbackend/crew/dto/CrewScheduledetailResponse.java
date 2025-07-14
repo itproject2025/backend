@@ -36,6 +36,13 @@ public record CrewScheduledetailResponse(
         @Schema(description = "도착 국가", example = "JP")
         String arrivalCountry,
 
+        @Schema(description = "출발 국가 국기 URL")
+        String departureFlagUrl,
+
+        @Schema(description = "도착 국가 국기 URL")
+        String arrivalFlagUrl,
+
+
         WeatherResponse DepartureWeather,
 
         WeatherResponse arrivalWeather
