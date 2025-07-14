@@ -34,6 +34,12 @@ public record CrewScheduleResponse(
         String departureCountry,
 
         @Schema(description = "도착 국가", example = "JP")
-        String arrivalCountry
+        String arrivalCountry,
+
+        @Schema(description = "출발 국가 국기 URL")
+        String departureFlagUrl,
+
+        @Schema(description = "도착 국가 국기 URL")
+        String arrivalFlagUrl
 ) {
 }

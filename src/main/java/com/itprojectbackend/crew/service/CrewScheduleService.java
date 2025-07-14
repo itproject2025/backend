@@ -10,6 +10,7 @@ import com.itprojectbackend.crew.dto.CrewScheduleRequest;
 import com.itprojectbackend.crew.dto.CrewScheduleResponse;
 import com.itprojectbackend.crew.dto.CrewScheduledetailResponse;
 import com.itprojectbackend.crew.dto.WeatherResponse;
+import com.itprojectbackend.common.config.CloudFrontProperties;
 import com.itprojectbackend.crew.external.WeatherClient;
 import com.itprojectbackend.crew.repository.CrewScheduleRepository;
 import com.itprojectbackend.flight.domain.FlightSchedule;
@@ -36,6 +37,7 @@ public class CrewScheduleService {
     private final CrewScheduleFinder crewScheduleFinder;
     private final FlightDiaryRepository flightDiaryRepository;
     private final WeatherClient weatherClient;
+    private final CloudFrontProperties cloudFrontProperties;
 
     public List<CrewScheduleResponse> getScheduleByUserAndDay(Long userId, int year, int month, int day) {
         LocalDate targetDate=LocalDate.of(year, month, day);
@@ -58,7 +60,9 @@ public class CrewScheduleService {
                             fs.getArrivalDate(),
                             cs.getFlightType(),
                             fs.getDepartureCode().getCountry(),
-                            fs.getArrivalCode().getCountry()
+                            fs.getArrivalCode().getCountry(),
+                            cloudFrontProperties.buildFlagUrl(fs.getDepartureCode().getCountry()),
+                            cloudFrontProperties.buildFlagUrl(fs.getArrivalCode().getCountry())
                     );
                 })
                 .toList();
@@ -85,7 +89,9 @@ public class CrewScheduleService {
                             fs.getArrivalDate(),
                             cs.getFlightType(),
                             fs.getDepartureCode().getCountry(),
-                            fs.getArrivalCode().getCountry()
+                            fs.getArrivalCode().getCountry(),
+                            cloudFrontProperties.buildFlagUrl(fs.getDepartureCode().getCountry()),
+                            cloudFrontProperties.buildFlagUrl(fs.getArrivalCode().getCountry())
                     );
                 })
                 .toList();
@@ -164,7 +170,9 @@ public class CrewScheduleService {
                             arrivalTime,
                             schedule.getFlightType(),
                             flight.getDepartureCode().getCountry(),
-                            flight.getArrivalCode().getCountry()
+                            flight.getArrivalCode().getCountry(),
+                            cloudFrontProperties.buildFlagUrl(flight.getDepartureCode().getCountry()),
+                            cloudFrontProperties.buildFlagUrl(flight.getArrivalCode().getCountry())
                     );
                 })
                 .toList();
@@ -221,8 +229,13 @@ public class CrewScheduleService {
                 crewSchedule.getFlightType(),
                 flightSchedule.getDepartureCode().getCountry(),
                 flightSchedule.getArrivalCode().getCountry(),
+                cloudFrontProperties.buildFlagUrl(flightSchedule.getDepartureCode().getCountry()),
+                cloudFrontProperties.buildFlagUrl(flightSchedule.getArrivalCode().getCountry()),
                 departureWeatherResponse,
                 arrivalWeatherResponse
         );
     }
+
+
+
 }
