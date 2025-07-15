@@ -8,8 +8,8 @@ import java.time.LocalDateTime;
 @Builder
 public record FlightDiaryDetailResponse(
         Long diaryId,
-        String departureCode,
-        String departureFullName,
+        String Code,
+        String FullName,
         String flightNumber,
         FlightType flightType,
         LocalDateTime flightDate,

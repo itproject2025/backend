@@ -102,8 +102,8 @@ public class FlightDiaryService {
 
         FlightDiaryDetailResponse flightDiaryDetailResponse=FlightDiaryDetailResponse.builder()
                 .diaryId(flightDiary.getId())
-                .departureCode(flightSchedule.getDepartureCode().getCode())
-                .departureFullName(flightSchedule.getDepartureCode().getName())
+                .Code(getCode(flightDiary))
+                .FullName(getCodeFullName(flightDiary))
                 .flightNumber(flightSchedule.getFlightNumber())
                 .flightType(flightType)
                 .flightDate(flightSchedule.getDepartureDate())
@@ -114,6 +114,36 @@ public class FlightDiaryService {
                 .build();
 
         return flightDiaryDetailResponse;
+    }
+
+    private String getCode(FlightDiary flightDiary) {
+        String baseAirport = flightDiary.getWriter().getBaseAirport().getCode();
+        FlightSchedule flightSchedule = flightDiary.getFlightSchedule();
+        String departureCode=flightSchedule.getDepartureCode().getCode();
+        String arrivalCode=flightSchedule.getArrivalCode().getCode();
+
+        if(baseAirport.equals(departureCode)){
+            return flightSchedule.getArrivalCode().getCode();
+        }else if(baseAirport.equals(arrivalCode)){
+            return flightSchedule.getDepartureCode().getCode();
+        }else{
+            return flightSchedule.getArrivalCode().getCode();
+        }
+    }
+
+    private String getCodeFullName(FlightDiary flightDiary) {
+        String baseAirport = flightDiary.getWriter().getBaseAirport().getCode();
+        FlightSchedule flightSchedule = flightDiary.getFlightSchedule();
+        String departureCode = flightSchedule.getDepartureCode().getCode();
+        String arrivalCode = flightSchedule.getArrivalCode().getCode();
+
+        if (baseAirport.equals(departureCode)) {
+            return flightSchedule.getArrivalCode().getName();
+        } else if (baseAirport.equals(arrivalCode)) {
+            return flightSchedule.getDepartureCode().getName();
+        } else {
+            return flightSchedule.getArrivalCode().getName();
+        }
     }
 
     public String formatDuration(LocalDateTime departureTime, LocalDateTime arrivalTime) {
