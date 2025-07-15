@@ -75,6 +75,7 @@ public class FlightDiaryService {
 
             responses.add(FlightDiaryListResponse.builder()
                     .diaryId(diary.getId())
+                    .flightScheduleId(diary.getFlightSchedule().getId())
                     .flightDate(String.valueOf(flightSchedule.getDepartureDate()))
                     .departureCode(flightSchedule.getDepartureCode().getCode())
                     .arrivalCode(flightSchedule.getArrivalCode().getCode())
@@ -195,6 +196,7 @@ public class FlightDiaryService {
 
             return FlightDiaryListResponse.builder()
                     .diaryId(diary.getId())
+                    .flightScheduleId(flightSchedule.getId())
                     .flightDate(String.valueOf(flightSchedule.getDepartureDate()))
                     .departureCode(flightSchedule.getDepartureCode().getCode())
                     .arrivalCode(flightSchedule.getArrivalCode().getCode())

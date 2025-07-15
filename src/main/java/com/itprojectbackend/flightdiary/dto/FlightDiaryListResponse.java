@@ -6,6 +6,7 @@ import lombok.Builder;
 @Builder
 public record FlightDiaryListResponse(
         Long diaryId,
+        Long flightScheduleId,
         String flightDate,
         String departureCode,
         String arrivalCode,
