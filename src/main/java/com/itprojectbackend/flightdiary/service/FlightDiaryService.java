@@ -62,31 +62,31 @@ public class FlightDiaryService {
         User user = userFinder.findByUserId(userId);
         List<FlightDiary> flightDiaries = flightDiaryRepository.findByWriter(user);
 
-        List<FlightDiaryListResponse> responses = new ArrayList<>();
+        LocalDateTime now = LocalDateTime.now();
 
-        for (FlightDiary diary : flightDiaries) {
-            FlightSchedule flightSchedule = diary.getFlightSchedule();
+        return flightDiaries.stream()
+                .filter(diary -> diary.getFlightSchedule().getArrivalDate().isBefore(now)) // 완료된 비행만
+                .map(diary -> {
+                    FlightSchedule flightSchedule = diary.getFlightSchedule();
+                    FlightType flightType = flightSchedule.getCrewSchedules().stream()
+                            .filter(crewSchedule -> crewSchedule.getUser().equals(user))
+                            .findFirst()
+                            .map(crewSchedule -> crewSchedule.getFlightType())
+                            .orElse(null);
 
-            FlightType flightType = flightSchedule.getCrewSchedules().stream()
-                    .filter(crewSchedule -> crewSchedule.getUser().equals(user))
-                    .findFirst()
-                    .map(crewSchedule -> crewSchedule.getFlightType())
-                    .orElse(null);
-
-            responses.add(FlightDiaryListResponse.builder()
-                    .diaryId(diary.getId())
-                    .flightScheduleId(diary.getFlightSchedule().getId())
-                    .flightDate(String.valueOf(flightSchedule.getDepartureDate()))
-                    .departureCode(flightSchedule.getDepartureCode().getCode())
-                    .arrivalCode(flightSchedule.getArrivalCode().getCode())
-                    .flightNumber(flightSchedule.getFlightNumber())
-                    .flightType(flightType)
-                    .isWritten(diary.isWritten())
-                    .country(getCountry(diary))
-                    .build());
-        }
-
-        return responses;
+                    return FlightDiaryListResponse.builder()
+                            .diaryId(diary.getId())
+                            .flightScheduleId(flightSchedule.getId())
+                            .flightDate(String.valueOf(flightSchedule.getDepartureDate()))
+                            .departureCode(flightSchedule.getDepartureCode().getCode())
+                            .arrivalCode(flightSchedule.getArrivalCode().getCode())
+                            .flightNumber(flightSchedule.getFlightNumber())
+                            .flightType(flightType)
+                            .isWritten(diary.isWritten())
+                            .country(getCountry(diary))
+                            .build();
+                })
+                .collect(Collectors.toList());
     }
 
     public FlightDiaryDetailResponse getFlightDiaryDetail(Long userId, Long diaryId) {
@@ -178,8 +178,17 @@ public class FlightDiaryService {
         Pageable top5 = PageRequest.of(0, 5);
         Pageable top15 = PageRequest.of(0, 15);
 
-        List<FlightDiary> unwritten = flightDiaryRepository.findTop5Unwritten(userId, top5);
-        List<FlightDiary> written = flightDiaryRepository.findTop15Written(userId, top15);
+        LocalDateTime now = LocalDateTime.now();
+
+        List<FlightDiary> unwritten = flightDiaryRepository.findTop5Unwritten(userId, top5)
+                .stream()
+                .filter(diary -> diary.getFlightSchedule().getArrivalDate().isBefore(now))
+                .collect(Collectors.toList());
+
+        List<FlightDiary> written = flightDiaryRepository.findTop15Written(userId, top15)
+                .stream()
+                .filter(diary -> diary.getFlightSchedule().getArrivalDate().isBefore(now))
+                .collect(Collectors.toList());
 
         List<FlightDiary> combined = new ArrayList<>();
         combined.addAll(unwritten);
