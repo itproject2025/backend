@@ -23,18 +23,20 @@ public interface FlightDiaryRepository extends JpaRepository<FlightDiary, Long> 
 
 
     @Query("""
-    SELECT d FROM FlightDiary d
-    JOIN FETCH d.flightSchedule fs
-    WHERE d.writer.id = :userId AND d.isWritten = false
-    ORDER BY fs.departureDate DESC
+SELECT d FROM FlightDiary d
+JOIN FETCH d.flightSchedule fs
+WHERE d.writer.id = :userId AND d.isWritten = false
+AND fs.arrivalDate < CURRENT_TIMESTAMP
+ORDER BY fs.departureDate DESC
 """)
-    List<FlightDiary> findTop5Unwritten(@Param("userId") Long userId, Pageable pageable);
+    List<FlightDiary> findTop5UnwrittenFinished(@Param("userId") Long userId, Pageable pageable);
 
     @Query("""
-    SELECT d FROM FlightDiary d
-    JOIN FETCH d.flightSchedule fs
-    WHERE d.writer.id = :userId AND d.isWritten = true
-    ORDER BY fs.departureDate DESC
+SELECT d FROM FlightDiary d
+JOIN FETCH d.flightSchedule fs
+WHERE d.writer.id = :userId AND d.isWritten = true
+AND fs.arrivalDate < CURRENT_TIMESTAMP
+ORDER BY fs.departureDate DESC
 """)
-    List<FlightDiary> findTop15Written(@Param("userId") Long userId, Pageable pageable);
+    List<FlightDiary> findTop15WrittenFinished(@Param("userId") Long userId, Pageable pageable);
 }

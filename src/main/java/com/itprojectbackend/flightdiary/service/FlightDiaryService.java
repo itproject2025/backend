@@ -65,7 +65,10 @@ public class FlightDiaryService {
         LocalDateTime now = LocalDateTime.now();
 
         return flightDiaries.stream()
-                .filter(diary -> diary.getFlightSchedule().getArrivalDate().isBefore(now)) // 완료된 비행만
+                .filter(diary -> diary.getFlightSchedule().getArrivalDate().isBefore(now))
+                .sorted(Comparator.comparing(
+                        (FlightDiary diary) -> diary.getFlightSchedule().getDepartureDate()
+                ).reversed())
                 .map(diary -> {
                     FlightSchedule flightSchedule = diary.getFlightSchedule();
                     FlightType flightType = flightSchedule.getCrewSchedules().stream()
@@ -178,17 +181,8 @@ public class FlightDiaryService {
         Pageable top5 = PageRequest.of(0, 5);
         Pageable top15 = PageRequest.of(0, 15);
 
-        LocalDateTime now = LocalDateTime.now();
-
-        List<FlightDiary> unwritten = flightDiaryRepository.findTop5Unwritten(userId, top5)
-                .stream()
-                .filter(diary -> diary.getFlightSchedule().getArrivalDate().isBefore(now))
-                .collect(Collectors.toList());
-
-        List<FlightDiary> written = flightDiaryRepository.findTop15Written(userId, top15)
-                .stream()
-                .filter(diary -> diary.getFlightSchedule().getArrivalDate().isBefore(now))
-                .collect(Collectors.toList());
+        List<FlightDiary> unwritten = flightDiaryRepository.findTop5UnwrittenFinished(userId, top5);
+        List<FlightDiary> written = flightDiaryRepository.findTop15WrittenFinished(userId, top15);
 
         List<FlightDiary> combined = new ArrayList<>();
         combined.addAll(unwritten);
@@ -215,7 +209,6 @@ public class FlightDiaryService {
                     .country(getCountry(diary))
                     .build();
         }).toList();
-
     }
 
     private String getCountry(FlightDiary flightDiary) {
