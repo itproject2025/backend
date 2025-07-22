@@ -4,10 +4,12 @@ import com.itprojectbackend.airport.domain.Airport;
 import com.itprojectbackend.airport.repository.AirportRepository;
 import com.itprojectbackend.common.exception.CustomException;
 import com.itprojectbackend.common.exception.ErrorCode;
+import com.itprojectbackend.user.UserFinder;
 import com.itprojectbackend.user.domain.User;
 import com.itprojectbackend.user.domain.enums.Airline;
 import com.itprojectbackend.user.dto.LoginRequest;
 import com.itprojectbackend.user.dto.LoginResponse;
+import com.itprojectbackend.user.dto.ProfileResponse;
 import com.itprojectbackend.user.dto.RegisterRequest;
 import com.itprojectbackend.user.jwt.JwtUtil;
 import com.itprojectbackend.user.repository.UserRepository;
@@ -23,6 +25,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final AirportRepository airportRepository;
     private final JwtUtil jwtUtil;
+    private final UserFinder userFinder;
 
     public void register(RegisterRequest registerRequest) {
         if(userRepository.existsByEmail(registerRequest.email())){
@@ -65,12 +68,16 @@ public class AuthService {
     }
 
     public LoginResponse login(LoginRequest loginRequest) {
-        User user=userRepository.findByEmail(loginRequest.email())
-                .orElseThrow(()->(new CustomException(ErrorCode.USER_NOT_FOUND)));
+        User user=userFinder.findByEmail(loginRequest.email());
         if(!passwordEncoder.matches(loginRequest.password(), user.getPassword())){
             throw new CustomException(ErrorCode.PASSWORD_NOT_MATCH);
         }
         String token= jwtUtil.createAccessToken(user.getEmail());
         return new LoginResponse(token);
+    }
+
+    public ProfileResponse profile(Long userId) {
+        User user = userFinder.findByUserId(userId);
+        return ProfileResponse.from(user);
     }
 }

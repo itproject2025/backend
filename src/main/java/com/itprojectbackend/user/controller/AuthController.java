@@ -3,17 +3,17 @@ package com.itprojectbackend.user.controller;
 import com.itprojectbackend.common.domain.ApiResponse;
 import com.itprojectbackend.user.dto.LoginRequest;
 import com.itprojectbackend.user.dto.LoginResponse;
+import com.itprojectbackend.user.dto.ProfileResponse;
 import com.itprojectbackend.user.dto.RegisterRequest;
+import com.itprojectbackend.user.jwt.CustomUserDetails;
 import com.itprojectbackend.user.jwt.JwtUtil;
 import com.itprojectbackend.user.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -35,5 +35,13 @@ public class AuthController {
     public ResponseEntity<ApiResponse<LoginResponse>> login(@RequestBody LoginRequest loginRequest) {
         LoginResponse loginResponse = authService.login(loginRequest);
         return ResponseEntity.ok(ApiResponse.success("로그인 성공", loginResponse));
+    }
+
+    @GetMapping("/users/profile")
+    @Operation(summary = "내 정보 가져오기", description = "해당 유저의 정보를 가져오는 API입니다.")
+    public ResponseEntity<ApiResponse<ProfileResponse>> profile(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        Long userId = customUserDetails.getUser().getId();
+        ProfileResponse profileResponse = authService.profile(userId);
+        return ResponseEntity.ok(ApiResponse.success("내 정보 가져오기", profileResponse));
     }
 }
