@@ -7,5 +7,6 @@ public record RegisterRequest(
         String airline,
         String baseAirport,
         int ShowupHour,
-        int ShowupMinute
+        int ShowupMinute,
+        boolean showupAlertEnabled
 ) {}

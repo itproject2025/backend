@@ -32,6 +32,9 @@ public class User extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Airline airline;
 
+    @Column(nullable = false)
+    private boolean showupAlertEnabled;
+
     @ManyToOne
     @JoinColumn(name = "base_airport_code")
     private Airport baseAirport;

@@ -26,8 +26,19 @@ public class AuthService {
 
     public void register(RegisterRequest registerRequest) {
         if(userRepository.existsByEmail(registerRequest.email())){
-            throw new CustomException(ErrorCode.EMAIL_ALREADY_EXISTS);
+            throw new CustomException(ErrorCode.EMAIL_ALREADY_USED);
         }
+        if(userRepository.existsByNickname(registerRequest.nickname())){
+            throw new CustomException(ErrorCode.NICKNAME_ALREADY_USED);
+        }
+
+        if(registerRequest.nickname().length()<2){
+            throw new CustomException(ErrorCode.INVALID_NICKNAME_LENGTH);
+        }
+        if(registerRequest.password().length()<6){
+            throw new CustomException(ErrorCode.INVALID_PASSWORD_LENGTH);
+        }
+
         Airline airline;
         Airport airport;
         try{
@@ -48,6 +59,7 @@ public class AuthService {
                 .airline(airline)
                 .baseAirport(airport)
                 .ShowupOffsetMinutes(registerRequest.ShowupHour()*60+ registerRequest.ShowupMinute())
+                .showupAlertEnabled(registerRequest.showupAlertEnabled())
                 .build();
         userRepository.save(newUser);
     }

@@ -18,9 +18,15 @@ public enum ErrorCode {
 
 	// User Error
 	USER_NOT_FOUND(HttpStatus.NOT_FOUND, "사용자의 정보를 찾을 수 없습니다."),
-	EMAIL_ALREADY_EXISTS(HttpStatus.BAD_REQUEST,"이미 존재하는 이메일입니다."),
+	EMAIL_ALREADY_USED(HttpStatus.BAD_REQUEST,"이미 존재하는 이메일입니다."),
 	INVALID_ENUM(HttpStatus.BAD_REQUEST, "알 수 없는 항공사입니다."),
 	PASSWORD_NOT_MATCH(HttpStatus.BAD_REQUEST,"비밀번호가 일치하지 않습니다"),
+	INVALID_PASSWORD_LENGTH(HttpStatus.BAD_REQUEST, "비밀번호는 6자 이상이여야 합니다."),
+	PASSWORD_ALREADY_USED(HttpStatus.BAD_REQUEST,"사용중인 비밀번호 입니다."),
+	NICKNAME_ALREADY_USED(HttpStatus.BAD_REQUEST," 사용중인 닉네임 입니다."),
+	INVALID_NICKNAME_LENGTH(HttpStatus.BAD_REQUEST,"닉네임은 2자 이상이여야 합니다."),
+
+
 
 	//Airport Error
 	INVALID_AIRPORT(HttpStatus.BAD_REQUEST,"해당 공항은 존재하지 않습니다."),
